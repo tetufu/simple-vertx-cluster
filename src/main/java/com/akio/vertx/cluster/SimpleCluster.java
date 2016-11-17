@@ -21,10 +21,20 @@ import java.util.Stack;
  */
 public class SimpleCluster implements Runnable {
 
-    public final static Member newMembers(@NotNull final String hostorIp, @NotNull final boolean local, final String... verticles) {
+    public final static Member newMember(@NotNull final String hostorIp, @NotNull final boolean local, final String... verticles) {
         final Member m = new Member();
         m.hostOrIp = hostorIp;
         m.local = local;
+        for (final String abstractVerticle : verticles) {
+            m.verticles.add(abstractVerticle);
+        }
+        return m;
+    }
+
+    public final static Member newLocalMember(final String... verticles) {
+        final Member m = new Member();
+        m.hostOrIp = "localhost";
+        m.local = true;
         for (final String abstractVerticle : verticles) {
             m.verticles.add(abstractVerticle);
         }
