@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.UnknownHostException;
+
 /**
  * Created by ftronche@akio.com on 17/11/16.
  */
@@ -35,7 +37,7 @@ public class SimpleClusterTest {
     }
 
     @Test
-    public void testCreateMember(TestContext context) throws InterruptedException {
+    public void testCreateMember(TestContext context) throws InterruptedException, UnknownHostException {
         final SimpleCluster.Member member = SimpleCluster.newMember("uicdev.akio.fr", true, Server.class.getName(), Server.class.getName());
         SimpleCluster simpleCluster = SimpleCluster.newSimpleCluster(member);
         simpleCluster.start();
