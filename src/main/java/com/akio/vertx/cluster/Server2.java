@@ -16,6 +16,7 @@ import java.lang.management.ManagementFactory;
  * A simple clustered verticle http server service,
  * launched 3 times in the same JVM, listening on a different port.
  */
+@Deprecated
 public class Server2 extends AbstractVerticle {
     // a static http port wich will be increment each time.
     static int httpPort = 8080;
