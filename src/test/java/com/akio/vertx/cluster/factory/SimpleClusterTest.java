@@ -19,7 +19,7 @@ import java.net.UnknownHostException;
  * Created by ftronche@akio.com on 17/11/16.
  */
 @RunWith(VertxUnitRunner.class)
-public class SimpleClusterTest {
+public class SimpleClusterTest implements WaitingSupport {
     private final static Logger LOGGER = LoggerFactory.getLogger(SimpleClusterTest.class.getName());
 
     private Vertx vertx;
@@ -39,13 +39,10 @@ public class SimpleClusterTest {
     @Test
     public void testCreateMember(TestContext context) throws InterruptedException, UnknownHostException {
         final SimpleCluster.Member member = SimpleCluster.newMember("uicdev.akio.fr", true, Server.class.getName(), Server.class.getName());
-        SimpleCluster simpleCluster = SimpleCluster.newSimpleCluster(member);
+        final SimpleCluster simpleCluster = SimpleCluster.newSimpleCluster("10.34.1.9", member);
         simpleCluster.start();
-        waitFor(10000);
+        WaitingSupport.waitFor(10000);
 
     }
 
-    private void waitFor(long millisecond) throws InterruptedException {
-        Thread.currentThread().sleep(millisecond);
-    }
 }

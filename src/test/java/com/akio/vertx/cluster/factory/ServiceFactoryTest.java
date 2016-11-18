@@ -36,7 +36,8 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
     public void before(TestContext context) throws Exception {
         Server server = new Server();
       //  server.launchMember();
-        Thread.currentThread().sleep(10000);
+        //Thread.currentThread().sleep(10000);
+        WaitingSupport.waitFor(10000);
         vertx = server.getVertx();
 
     }

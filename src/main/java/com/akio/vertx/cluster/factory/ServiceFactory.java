@@ -1,7 +1,5 @@
 package com.akio.vertx.cluster.factory;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.servicediscovery.Record;
 import io.vertx.servicediscovery.ServiceReference;
@@ -14,7 +12,7 @@ import java.util.Map;
 /**
  * The service factory interface.
  */
-public interface ServiceFactory {
+public interface ServiceFactory extends WaitingSupport {
 
     /**
      * Give the default factory implementation.
