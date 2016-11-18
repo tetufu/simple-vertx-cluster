@@ -1,5 +1,7 @@
 package com.akio.vertx.cluster.factory;
 
+import static com.akio.vertx.cluster.factory.WaitingSupport.waitFor;
+
 import com.akio.vertx.cluster.Server;
 import com.akio.vertx.cluster.SimpleCluster;
 import io.vertx.core.Vertx;
@@ -38,11 +40,14 @@ public class SimpleClusterTest implements WaitingSupport {
 
     @Test
     public void testCreateMember(TestContext context) throws InterruptedException, UnknownHostException {
+        //
         final SimpleCluster.Member member = SimpleCluster.newMember("uicdev.akio.fr", true, Server.class.getName(), Server.class.getName());
         final SimpleCluster simpleCluster = SimpleCluster.newSimpleCluster("10.34.1.9", member);
         simpleCluster.start();
-        WaitingSupport.waitFor(10000);
 
+        waitFor(10000);
+        simpleCluster.removeLocalMember(member);
+        waitFor(10000);
     }
 
 }

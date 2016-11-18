@@ -16,13 +16,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * a Simple cluster for {@link Vertx} technologie.
  * Created by ftronche@akio.com on 17/11/16.
  */
-public class SimpleCluster {
+public class SimpleCluster implements Runnable {
 
     /**
      * Create a new {@link Member} for the {@link SimpleCluster} : it could be local, when passing true to the local parameter.
@@ -81,6 +83,7 @@ public class SimpleCluster {
         private Stack<String> verticles = new Stack<>();
         private String hostOrIp;
         private boolean local;
+        private Map<String, String> verticleIds = new ConcurrentHashMap<>();
 
         @Override
         public String toString() {
@@ -94,6 +97,7 @@ public class SimpleCluster {
     private final static Logger LOGGER = LoggerFactory.getLogger(SimpleCluster.class.getName());
     private final List<Member> members = new ArrayList<>();
     private String ipInterface;
+    private Thread thread;
 
     /**
      * Protected {@link SimpleCluster} constructor. It's not possible to instantiate it, you need to pass by the static factory method {@link SimpleCluster#newMember(String, boolean, String...)} instead.
@@ -114,23 +118,48 @@ public class SimpleCluster {
      * start the {@link SimpleCluster}.
      */
     public void start() {
-        run();
+        this.thread = new Thread(this);
+        this.thread.start();
     }
 
-    public boolean removeMember(@NotNull final Member memberToRemove) {
-        for (Member m : members) {
-            if (m.equals(memberToRemove)) {
-                members.remove(m);
-                return true;
+    /**
+     * Remove the {@link Member} named memberToRemove, from the current {@link SimpleCluster} instance.
+     *
+     * @param localMemberToRemove the local {@link Member} to remove from the cuurent {@link SimpleCluster} instance.
+     * @return true if removed
+     */
+    public boolean removeLocalMember(@NotNull final Member localMemberToRemove) {
+        assert localMemberToRemove.local;
+        if (localMemberToRemove.local) {
+            for (Member m : members) {
+                if (m.equals(localMemberToRemove)) {
+                    // remove the member from the members list.
+                    members.remove(m);
+
+                    // get the ID's of the running verticle members
+                    String[] stringIds = m.verticleIds.keySet().toArray(new String[m.verticleIds.keySet().size()]);
+                    for (String id : stringIds) {
+                        undeployVerticle(id);
+                        LOGGER.info("undeployed verticle:" + id);
+                    }
+                    return true;
+                }
             }
+        } else {
+            throw new RuntimeException("Can only remove local member! The member you're trying to remove is local:" +localMemberToRemove.local);
         }
         return false;
     }
 
+    protected boolean undeployVerticle(@NotNull final String verticleId) {
+        Vertx.vertx().undeploy(verticleId);
+        return true;
+    }
+
     /**
-     * Run the {@link SimpleCluster}. Note that this method is protected! To call it, call the {@link SimpleCluster#start()} method instead.
+     * Run the {@link SimpleCluster}. To call it, call the {@link SimpleCluster#start()} method instead.
      */
-    protected void run() {
+    public void run() {
         for (Member member : members) {
             launchClusteredVerticle(setUpCluster(), member);
         }
@@ -175,7 +204,13 @@ public class SimpleCluster {
             for (String vertxClass : member.verticles) {
                 Vertx.clusteredVertx(vertxOptions, res -> {
                     if (res.succeeded()) {
-                        res.result().deployVerticle(vertxClass);
+                        res.result().deployVerticle(vertxClass, ch -> {
+                            if (ch.succeeded()) {
+                                String id = ch.result();
+                                member.verticleIds.put(id, vertxClass);
+                                LOGGER.info("New Verticle launched: verticle: " + vertxClass + " id: " + id);
+                            }
+                        });
                     }
                 });
             }

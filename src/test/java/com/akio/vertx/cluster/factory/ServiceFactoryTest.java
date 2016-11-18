@@ -1,5 +1,7 @@
 package com.akio.vertx.cluster.factory;
 
+import static com.akio.vertx.cluster.factory.WaitingSupport.waitFor;
+
 import com.akio.vertx.cluster.Server;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -35,16 +37,16 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
     @Before
     public void before(TestContext context) throws Exception {
         Server server = new Server();
-      //  server.launchMember();
+        //  server.launchMember();
         //Thread.currentThread().sleep(10000);
-        WaitingSupport.waitFor(10000);
+        waitFor(10000);
         vertx = server.getVertx();
 
     }
 
     @After
     public void after(TestContext context) {
-           vertx.close(context.asyncAssertSuccess());
+        vertx.close(context.asyncAssertSuccess());
     }
 
     @Test
@@ -71,6 +73,7 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
         // check the returned value
         context.assertTrue(result);
     }
+
     private ServiceMetadatas createServiceMetadatas() {
         return ServiceMetadatas.create(vertx)
                 .setName(Server.class.getName())
@@ -81,7 +84,7 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
     }
 
     @Test
-    public void testGetServiceReferenceByName(TestContext testContext) throws InterruptedException      {
+    public void testGetServiceReferenceByName(TestContext testContext) throws InterruptedException {
         // get the default ServiceFactory instance
         ServiceFactory factory = ServiceFactory.getDefault();
         boolean published = factory.publish(createServiceMetadatas(), null);
@@ -90,7 +93,7 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
 
         factory.retrieveServiceRecords(vertx, Server.class.getName(), recordList);
 
-        Thread.currentThread().sleep(200);
+        waitFor(200);
 
         if (recordList != null && !recordList.isEmpty()) {
             final ServiceReference reference = factory.getServiceReference(recordList.get(0));
@@ -105,7 +108,7 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
                     });
                 }
             });
-            Thread.currentThread().sleep(500);
+            waitFor(500);
         }
     }
 
