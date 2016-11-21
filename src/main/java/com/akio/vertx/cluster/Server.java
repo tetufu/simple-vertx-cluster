@@ -1,12 +1,6 @@
 package com.akio.vertx.cluster;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.TcpIpConfig;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.spi.cluster.ClusterManager;
-import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
