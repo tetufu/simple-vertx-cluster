@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,17 +48,8 @@ public class SimpleCluster implements Runnable {
      * @param verticles the verticle to launch in the new created {@link Member}.
      * @return a new local {@link Member}.
      */
-    public final static Member newLocalMember(final String... verticles) {
-        final Member m = new Member();
-        try {
-            m.hostOrIp = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {/* ignore*/}
-        m.local = true;
-
-        for (final String abstractVerticle : verticles) {
-            m.verticles.add(abstractVerticle);
-        }
-        return m;
+    public final static Member newLocalMember(@NotNull String domainOrIp, @NotNull final String... verticles) {
+        return newMember(domainOrIp, true, verticles);
     }
 
     /**
@@ -127,16 +116,19 @@ public class SimpleCluster implements Runnable {
      *
      * @param localMemberToRemove the local {@link Member} to remove from the cuurent {@link SimpleCluster} instance.
      * @return true if removed
+     * @precondition localMemberToRemove.local need to be true, otherwith it will throw a {@link RuntimeException}.
      */
     public boolean removeLocalMember(@NotNull final Member localMemberToRemove) {
+
         assert localMemberToRemove.local;
+
         if (localMemberToRemove.local) {
             for (Member m : members) {
                 if (m.equals(localMemberToRemove)) {
                     // remove the member from the members list.
                     members.remove(m);
 
-                    // get the ID's of the running verticle members
+                    // get ID's of running verticles members
                     String[] stringIds = m.verticleIds.keySet().toArray(new String[m.verticleIds.keySet().size()]);
                     for (String id : stringIds) {
                         undeployVerticle(id);
@@ -146,7 +138,7 @@ public class SimpleCluster implements Runnable {
                 }
             }
         } else {
-            throw new RuntimeException("Can only remove local member! The member you're trying to remove is local:" +localMemberToRemove.local);
+            throw new RuntimeException("Can only remove local member! The member you're trying to remove is local:" + localMemberToRemove.local);
         }
         return false;
     }
@@ -160,6 +152,7 @@ public class SimpleCluster implements Runnable {
      * Run the {@link SimpleCluster}. To call it, call the {@link SimpleCluster#start()} method instead.
      */
     public void run() {
+        //VertxOptions vertxOptions = setUpCluster();
         for (Member member : members) {
             launchClusteredVerticle(setUpCluster(), member);
         }
@@ -198,7 +191,7 @@ public class SimpleCluster implements Runnable {
      * @param vertxOptions
      * @param member
      */
-    protected void launchClusteredVerticle(final VertxOptions vertxOptions, final Member member) {
+    protected void launchClusteredVerticle(@NotNull final VertxOptions vertxOptions, @NotNull final Member member) {
 
         if (member.local) {
             for (String vertxClass : member.verticles) {
@@ -214,7 +207,6 @@ public class SimpleCluster implements Runnable {
                     }
                 });
             }
-
         }
     }
 }

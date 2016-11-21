@@ -3,6 +3,7 @@ package com.akio.vertx.cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.akio.vertx.cluster.SimpleCluster.*;
 import static com.akio.vertx.cluster.factory.WaitingSupport.waitFor;
 
 /**
@@ -13,17 +14,13 @@ public class Main {
 
     public static void main(String... args) {
         // create a local member of the cluster. It is possible to launch multiple time the same Verticle instance
-        final SimpleCluster.Member member1 = SimpleCluster.newLocalMember(Server.class.getName()
-                , Server.class.getName());
+        final Member member1 = newLocalMember(Server.class.getName(), Server.class.getName());
         // create one remote member, with an other guy of the Feature Team
-        final SimpleCluster.Member member2 = SimpleCluster.newMember("10.34.1.23",
-                false,
-                Server.class.getName());
+        final Member member2 = newMember("10.34.1.23", false, Server.class.getName());
         // create another local member
-        final SimpleCluster.Member member3 = SimpleCluster.newLocalMember(Server.class.getName(), Server.class.getName());
-        // create the cluster instance with the previous created members, and required IP of the bound interface.
-        final SimpleCluster simpleCluster = SimpleCluster.newSimpleCluster("10.34.1.9",
-                member1, member2, member3);
+        final Member member3 = newLocalMember("uicdev.akio.fr",Server.class.getName(), Server.class.getName());
+        // create the cluster instance with the previous created members, and required IP of the bounded interface.
+        final SimpleCluster simpleCluster = newSimpleCluster("10.34.1.9", member1, member2, member3);
         // start the cluster.
         simpleCluster.start();
         LOGGER.info("Waiting 10 seconds while the cluster is started ");
@@ -31,6 +28,5 @@ public class Main {
 
         LOGGER.info("Try to remove a member from the SimpleCluster : " + member3);
         simpleCluster.removeLocalMember(member3);
-
     }
 }
