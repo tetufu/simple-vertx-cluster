@@ -1,4 +1,4 @@
-package com.akio.vertx.cluster.factory;
+package online.malleautrue.vertx.cluster.factory;
 
 /**
  * Created by ftronche@akio.com on 18/11/16.

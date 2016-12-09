@@ -1,4 +1,4 @@
-package com.akio.vertx.cluster;
+package online.malleautrue.vertx.cluster;
 
 
 import com.hazelcast.config.Config;

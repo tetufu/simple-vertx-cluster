@@ -1,8 +1,10 @@
-package com.akio.vertx.cluster.factory;
+package online.malleautrue.vertx.cluster.factory;
 
-import static com.akio.vertx.cluster.factory.WaitingSupport.waitFor;
 
-import com.akio.vertx.cluster.Server;
+
+import static online.malleautrue.vertx.cluster.factory.WaitingSupport.waitFor;
+
+import online.malleautrue.vertx.cluster.Server;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Vertx;
@@ -95,7 +97,7 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
 
         waitFor(200);
 
-        if (recordList != null && !recordList.isEmpty()) {
+        if (!recordList.isEmpty()) {
             final ServiceReference reference = factory.getServiceReference(recordList.get(0));
             HttpClient httpClient = reference.get();
 
@@ -108,7 +110,7 @@ public class ServiceFactoryTest implements ServiceMetadataAware {
                     });
                 }
             });
-            waitFor(500);
+            waitFor(5000);
         }
     }
 

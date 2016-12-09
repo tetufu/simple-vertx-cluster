@@ -8,7 +8,7 @@ Le package `com.akio.vertx.cluster`
  
  ## Créer les membre du cluster
  ### Ajout import static
- import static com.akio.vertx.cluster.SimpleCluster.*;
+ import static SimpleHazelcastCluster.*;
  
  ### Création de membre du cluster
 ```

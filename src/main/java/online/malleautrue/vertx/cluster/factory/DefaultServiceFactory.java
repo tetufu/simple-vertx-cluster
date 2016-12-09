@@ -1,8 +1,6 @@
-package com.akio.vertx.cluster.factory;
+package online.malleautrue.vertx.cluster.factory;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.AsyncResultHandler;
-import io.vertx.core.Handler;
+import online.malleautrue.vertx.cluster.ClusterRuntimeException;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.servicediscovery.Record;
@@ -39,7 +37,7 @@ public class DefaultServiceFactory implements ServiceFactory {
                         Record publishedRecord = event.result();
                     } else {
                         // publication failed
-                        throw new RuntimeException(event.cause());
+                        throw new ClusterRuntimeException(event.cause());
                     }
                 });
                 return true;
@@ -48,6 +46,7 @@ public class DefaultServiceFactory implements ServiceFactory {
         }
         return false;
     }
+
 
     @Override
     public boolean publish(@NotNull final ServiceMetadatas serviceMetadatas) {

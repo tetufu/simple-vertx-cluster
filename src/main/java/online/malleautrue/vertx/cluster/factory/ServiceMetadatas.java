@@ -1,4 +1,4 @@
-package com.akio.vertx.cluster.factory;
+package online.malleautrue.vertx.cluster.factory;
 
 import io.vertx.core.Vertx;
 import org.apache.commons.lang3.builder.ToStringBuilder;
