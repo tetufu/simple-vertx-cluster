@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,9 +29,7 @@ public interface SimpleCluster {
         final Member m = new Member();
         m.hostOrIp = hostorIp;
         m.local = local;
-        for (final String abstractVerticle : verticles) {
-            m.verticles.add(abstractVerticle);
-        }
+        Collections.addAll(m.verticles, verticles);
         return m;
     }
 

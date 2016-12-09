@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,9 +43,7 @@ public class SimpleHazelcastCluster extends Thread implements Runnable, SimpleCl
     protected SimpleHazelcastCluster(@NotNull final String ipInterface, @NotNull final Member... members) {
         super();
         this.ipInterface = ipInterface;
-        for (Member member : members) {
-            this.members.add(member);
-        }
+        Collections.addAll(this.members, members);
 
     }
 
@@ -96,7 +95,7 @@ public class SimpleHazelcastCluster extends Thread implements Runnable, SimpleCl
 
     @Override
     public boolean started() {
-        return false;
+        return this.started;
     }
 
     protected boolean undeployVerticle(@NotNull final String verticleId, @NotNull Handler<AsyncResult<Void>> handler) {
